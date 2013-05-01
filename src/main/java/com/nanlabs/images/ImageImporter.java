@@ -26,7 +26,7 @@ public class ImageImporter {
 		InputStream imageData = sourceRepository.fetchImageData(sourceURL);
 		
 		for(Integer width:widths){
-			byte[] processedImage = imageProcessor.doResize(imageData);
+			byte[] processedImage = imageProcessor.doResize(imageData, width);
 			Image image = new Image(new URL(sourceURL).getPath(), processedImage, width);
 			storageRepository.store(image);
 		}

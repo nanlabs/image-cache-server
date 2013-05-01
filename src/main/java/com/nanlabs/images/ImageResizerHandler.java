@@ -20,11 +20,12 @@ public class ImageResizerHandler extends AbstractHandler{
 	}
 
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-		
 		Params params = new Params(request);
+		System.out.println("Attempting to upload image from " + params.getSourceURL());
 		
 		importer.doImport(params.getSourceURL(), params.getWidths());
 		
+		System.out.println("Image uploaded succesfully src: " + params.getSourceURL() + "");
 		baseRequest.setHandled(true);
 		response.setStatus(HttpServletResponse.SC_OK);		
 	}
@@ -46,7 +47,7 @@ public class ImageResizerHandler extends AbstractHandler{
 			if(widthsParam != null && !widthsParam.isEmpty()){
 				tokens = widthsParam.split(",");
 			}else{
-				tokens = new String[]{String.valueOf(Image.DEFAULT_WIDTH)};
+				tokens = new String[]{"-1"};
 			}
 			int[] widths = new int[tokens.length];
 			for(int i=0;i<widths.length;i++){

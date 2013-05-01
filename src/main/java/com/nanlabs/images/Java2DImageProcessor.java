@@ -12,14 +12,14 @@ public class Java2DImageProcessor implements ImageProcessor {
 	
 
 	@Override
-	public byte[] doResize(InputStream source) throws IOException {
+	public byte[] doResize(InputStream source, int width) throws IOException {
 		ByteArrayOutputStream destination = new ByteArrayOutputStream(16384);
 		BufferedImage sourceImage = ImageIO.read(source);
-		Image resizedImage = sourceImage.getScaledInstance(com.nanlabs.images.Image.DEFAULT_WIDTH, -1, Image.SCALE_AREA_AVERAGING);
+		Image resizedImage = sourceImage.getScaledInstance(width > 0 ? width: sourceImage.getWidth(), -1, Image.SCALE_AREA_AVERAGING);
 		BufferedImage bufferedResizedImage = new BufferedImage(resizedImage.getWidth(null), resizedImage.getHeight(null), BufferedImage.TYPE_INT_RGB);
 		bufferedResizedImage.getGraphics().drawImage(resizedImage, 0, 0, null);
 		ImageIO.write(bufferedResizedImage, "jpeg", destination);
 		return destination.toByteArray();
 	}
-
+	
 }

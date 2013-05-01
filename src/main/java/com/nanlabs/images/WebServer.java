@@ -55,7 +55,7 @@ public class WebServer {
 	
 	 private static class Config{
 		 
-		 private  int serverPort = 8080;
+		 private  int serverPort = 8181;
 		 private  String dbname = "imageStorage";
 		 private  String mongoURL = "localhost";
 

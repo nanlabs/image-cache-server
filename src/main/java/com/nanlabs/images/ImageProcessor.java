@@ -5,6 +5,6 @@ import java.io.InputStream;
 
 public interface ImageProcessor {
 
-	byte[] doResize(InputStream source) throws IOException;
+	byte[] doResize(InputStream source, int width) throws IOException;
 
 }
