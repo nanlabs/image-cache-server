@@ -22,6 +22,7 @@ Property     | Description                                          |Default
  Mode of use:
  ------------
 * To upload a new image invoke, through HTTP, the following URL `http://<image-cache-server-url>/upload?source=<image-source-url>` where **image-cache-server-url** is the URL of the server, eg: **localhost:8181**, and **image-source-url** is the URL where the image to be cached is found, eg: **http://localhost/assets/image.jpeg**
+
 * To retrieve a cached image invoke the following URL `http://<image-cache-server-url>/static/<imageId> where **imageId** matches the relative path of the uploaded image, eg: if the image is uploaded from **http://localhost/assets/image.jpeg**, then the ID will be **/assets/image.jpeg** and the URL to get the image will be **http://localhost:8181/static/assets/image.jpeg**
 
 Spanish Version
