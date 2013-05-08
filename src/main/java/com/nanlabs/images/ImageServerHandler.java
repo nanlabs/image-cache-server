@@ -1,6 +1,7 @@
 package com.nanlabs.images;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class ImageServerHandler extends AbstractHandler {
 	@Override
 	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 		Params params = new Params(request);
-		Image image = storageRepository.findBestFitting(params.getImageId(), 0);
+		Image image = storageRepository.findBestFitting(URLDecoder.decode(params.getImageId(), "UTF-8"), 0);
 		if(image != null){
 			response.setContentType("image/jpeg");
 			response.getOutputStream().write(image.getData());
