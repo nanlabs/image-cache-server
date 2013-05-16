@@ -1,9 +1,12 @@
 package com.nanlabs.images;
 
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.picocontainer.DefaultPicoContainer;
 import org.picocontainer.MutablePicoContainer;
 import org.picocontainer.parameters.ComponentParameter;
@@ -21,7 +24,10 @@ public class WebServer {
 	public WebServer(Config config) throws Exception {
 		this.config = config;
 		initializeBeans();
-		Server server = new Server(config.getServerPort());
+		Server server = new Server(new QueuedThreadPool(10));
+		ServerConnector connector=new ServerConnector(server);
+        connector.setPort(config.getServerPort());
+        server.setConnectors(new Connector[]{connector});
 		ContextHandler uploaderContext = new ContextHandler("/upload");
 		uploaderContext.setHandler(pico.getComponent(ImageResizerHandler.class));
 		ContextHandler imageServerContext = new ContextHandler("/static");
