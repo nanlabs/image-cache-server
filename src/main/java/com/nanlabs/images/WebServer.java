@@ -24,7 +24,7 @@ public class WebServer {
 	public WebServer(Config config) throws Exception {
 		this.config = config;
 		initializeBeans();
-		Server server = new Server(new QueuedThreadPool(10));
+		Server server = new Server(new QueuedThreadPool(config.getPoolSize()));
 		ServerConnector connector=new ServerConnector(server);
         connector.setPort(config.getServerPort());
         server.setConnectors(new Connector[]{connector});
@@ -64,6 +64,7 @@ public class WebServer {
 		 private  int serverPort = 8181;
 		 private  String dbname = "imageStorage";
 		 private  String mongoURL = "localhost";
+		 private int poolSize = 10;
 
 		public Config(String[] args) {
 			
@@ -81,6 +82,8 @@ public class WebServer {
 					case "mongo.url":
 						this.mongoURL = value;
 						break;
+					case "server.poolSize":
+					this.poolSize = Integer.parseInt(value);
 				}
 			}
 		}
@@ -95,6 +98,10 @@ public class WebServer {
 
 		public String getMongoURL() {
 			return this.mongoURL;
+		}
+		
+		public int getPoolSize(){
+			return this.poolSize;
 		}
 		
 	}
