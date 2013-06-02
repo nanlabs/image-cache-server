@@ -1,5 +1,6 @@
 package com.nanlabs.images;
 
+import org.apache.commons.pool.ObjectPool;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
@@ -46,7 +47,8 @@ public class WebServer {
 		.addComponent(ImageServerHandler.class)
 		.addComponent(Java2DImageProcessor.class)
 		.addComponent(ImageImporter.class)
-		.addComponent(DefaultSourceRepository.class)
+		.addComponent(URLConnectionPoolableObjectFactory.class)
+		.addComponent(ObjectPool.class, URLConnectionFactoryPool.class,new ConstantParameter(config.getClientPoolSize()), new ComponentParameter())
 		.addComponent(MongoClient.class, MongoClient.class, new ConstantParameter(config.getMongoURL()))
 		.addComponent(MongoStorageRepository.class, MongoStorageRepository.class, new ComponentParameter(), new ConstantParameter(config.getDbName()));		
 	}
@@ -65,6 +67,7 @@ public class WebServer {
 		 private  String dbname = "imageStorage";
 		 private  String mongoURL = "localhost";
 		 private int poolSize = 10;
+		 private int clientPoolSize = 10;
 
 		public Config(String[] args) {
 			
@@ -83,7 +86,11 @@ public class WebServer {
 						this.mongoURL = value;
 						break;
 					case "server.poolSize":
-					this.poolSize = Integer.parseInt(value);
+						this.poolSize = Integer.parseInt(value);
+						break;
+					case "client.poolSize":
+						this.clientPoolSize = Integer.parseInt(value);
+						break;
 				}
 			}
 		}
@@ -102,6 +109,10 @@ public class WebServer {
 		
 		public int getPoolSize(){
 			return this.poolSize;
+		}
+		
+		public int getClientPoolSize(){
+			return this.clientPoolSize;
 		}
 		
 	}

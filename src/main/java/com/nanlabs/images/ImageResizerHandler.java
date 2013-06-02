@@ -23,7 +23,9 @@ public class ImageResizerHandler extends AbstractHandler{
 		Params params = new Params(request);
 		System.out.println("Attempting to upload image from " + params.getSourceURL());
 		
-		importer.doImport(params.getSourceURL(), params.getWidths());
+		synchronized (importer) {			
+			importer.doImport(params.getSourceURL(), params.getWidths());
+		}
 		
 		System.out.println("Image uploaded succesfully src: " + params.getSourceURL() + "");
 		baseRequest.setHandled(true);

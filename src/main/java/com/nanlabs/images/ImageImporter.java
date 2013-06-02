@@ -2,33 +2,67 @@ package com.nanlabs.images;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.pool.ObjectPool;
+
 public class ImageImporter {
 	
 	private static final String VFS_URL_CONTEXT = "vfs";
-
-	private SourceRepository sourceRepository;
 	
 	private StorageRepository storageRepository;
 	
 	private ImageProcessor imageProcessor;
 	
-	public ImageImporter(SourceRepository sourceRepository, StorageRepository storageRepository, ImageProcessor imageProcessor) {
-		this.sourceRepository = sourceRepository;
+	private ObjectPool<URLConnectionFactory> connectionFactoryPool;
+	
+	public ImageImporter(ObjectPool<URLConnectionFactory> connectionFactoryPool, StorageRepository storageRepository, ImageProcessor imageProcessor) {
+		this.connectionFactoryPool = connectionFactoryPool;
 		this.storageRepository = storageRepository;
 		this.imageProcessor = imageProcessor;
 	}
 
 	public void doImport(String sourceURL, int... widths) throws IOException {
 		
+		String encodedURL = normalize(sourceURL);
+		String urlPath = new URL(sourceURL).getPath();
+		
+		URLConnectionFactory connectionFactory;
+		try {
+			connectionFactory = connectionFactoryPool.borrowObject();
+			processImage(connectionFactory.open(encodedURL), urlPath, widths);
+			connectionFactoryPool.returnObject(connectionFactory);
+		}catch (IOException ioe){
+			throw ioe;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("Unnable to borrow connectionFactory from the pool");
+		}
+	}
+
+	private void processImage(URLConnection connection, String urlPath, int... widths) throws IOException {
+		InputStream imageData = connection.getInputStream();
+		try{
+			for (Integer width : widths) {
+				byte[] processedImage = imageProcessor.doResize(imageData, width);
+				Image image = new Image(urlPath, processedImage, width);
+				storageRepository.store(image);
+			}
+		}finally{
+			imageData.close();
+		}
+	}
+	
+	private String normalize(String sourceURL) throws UnsupportedEncodingException, MalformedURLException{
+		String encodedURL;
 		URL urlToCache = new URL(sourceURL);
 		String urlPath = urlToCache.getPath();
-		
-		String encodedURL;
 		
 		if (this.isVfsURL(urlToCache)) {
 			// This URL is a VFS URL, the VFS path has to be encoded.
@@ -39,14 +73,7 @@ public class ImageImporter {
 		} else {
 			encodedURL = sourceURL;
 		}
-		
-		InputStream imageData = sourceRepository.fetchImageData(encodedURL);
-		
-		for (Integer width : widths) {
-			byte[] processedImage = imageProcessor.doResize(imageData, width);
-			Image image = new Image(urlPath, processedImage, width);
-			storageRepository.store(image);
-		}
+		return encodedURL;
 	}
 	
 	private String buildUrlContext(URL initialUrl) {
