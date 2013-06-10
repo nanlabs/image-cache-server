@@ -29,12 +29,18 @@ public class WebServer {
 		ServerConnector connector=new ServerConnector(server);
         connector.setPort(config.getServerPort());
         server.setConnectors(new Connector[]{connector});
-		ContextHandler uploaderContext = new ContextHandler("/upload");
+		
+        ContextHandler uploaderContext = new ContextHandler("/upload");
 		uploaderContext.setHandler(pico.getComponent(ImageResizerHandler.class));
+		
 		ContextHandler imageServerContext = new ContextHandler("/static");
 		imageServerContext.setHandler(pico.getComponent(ImageServerHandler.class));
+		
+		ContextHandler imageRemoveContext = new ContextHandler("/remove");
+		imageRemoveContext.setHandler(pico.getComponent(ImageRemoveHandler.class));
+		
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
-		contexts.setHandlers(new Handler[]{uploaderContext, imageServerContext});
+		contexts.setHandlers(new Handler[]{uploaderContext, imageServerContext, imageRemoveContext});
 	    server.setHandler(contexts);
 	    server.start();
 	    server.join();
@@ -45,6 +51,7 @@ public class WebServer {
 		pico = new DefaultPicoContainer();
 		pico.addComponent(ImageResizerHandler.class)
 		.addComponent(ImageServerHandler.class)
+		.addComponent(ImageRemoveHandler.class)
 		.addComponent(Java2DImageProcessor.class)
 		.addComponent(ImageImporter.class)
 		.addComponent(URLConnectionPoolableObjectFactory.class)

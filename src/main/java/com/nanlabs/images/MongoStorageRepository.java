@@ -2,12 +2,14 @@ package com.nanlabs.images;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.CommandResult;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
+import com.mongodb.WriteResult;
 
-public class MongoStorageRepository implements StorageRepository{
+public class MongoStorageRepository implements StorageRepository {
 	
 	private MongoClient mongoClient;
 	
@@ -15,14 +17,11 @@ public class MongoStorageRepository implements StorageRepository{
 	
 	private static final String IMAGE_COLLECTION = "images";
 	
-	
-	public MongoStorageRepository(MongoClient mongoClient, String dbName){
+	public MongoStorageRepository(MongoClient mongoClient, String dbName) {
 		this.mongoClient = mongoClient;
 		this.dbName = dbName;
 		//this.getImageCollection().ensureIndex(new BasicDBObject("resolutions.width", "2d"));
 	}
-
-	
 
 	@Override
 	public void store(Image image) {
@@ -33,22 +32,26 @@ public class MongoStorageRepository implements StorageRepository{
 	@Override
 	public Image findBestFitting(String imageId, int preferredSize) {
 		DBObject imageObject = getImageCollection().findOne(new BasicDBObject("name", imageId));
-		if(imageObject != null){
+		if (imageObject != null) {
 			Image image = new Image(imageId, (byte[]) imageObject.get("data"), Image.DEFAULT_WIDTH);
 			return image;			
-		}else{
+		} else {
 			return null;
 		}
 	}
 	
-	private DB getDB(){
+	@Override
+	public Boolean remove(String imageId) {
+		WriteResult writeResult = getImageCollection().remove(new BasicDBObject("name", imageId));
+		CommandResult removeResult = writeResult.getLastError();
+		return removeResult.ok();
+	}
+	
+	private DB getDB() {
 		return mongoClient.getDB(dbName);
 	}
 	
 	private DBCollection getImageCollection() {
 		return this.getDB().getCollection(IMAGE_COLLECTION);
 	}
-	
-	
-
 }
