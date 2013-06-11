@@ -23,7 +23,9 @@ Property     | Description                                          |Default
  ------------
 * To upload a new image invoke, through HTTP, the following URL `http://<image-cache-server-url>/upload?source=<image-source-url>` where **image-cache-server-url** is the URL of the server, eg: **localhost:8181**, and **image-source-url** is the URL where the image to be cached is found, eg: **http://localhost/assets/image.jpeg**
 
-* To retrieve a cached image invoke the following URL `http://<image-cache-server-url>/static/<imageId> where **imageId** matches the relative path of the uploaded image, eg: if the image is uploaded from **http://localhost/assets/image.jpeg**, then the ID will be **/assets/image.jpeg** and the URL to get the image will be **http://localhost:8181/static/assets/image.jpeg**
+* To retrieve a cached image invoke the following URL `http://<image-cache-server-url>/static/<imageId>` where **imageId** matches the relative path of the uploaded image, eg: if the image is uploaded from **http://localhost/assets/image.jpeg**, then the ID will be **/assets/image.jpeg** and the URL to get the image will be **http://localhost:8181/static/assets/image.jpeg**
+
+* To remove a cached image invoke the following URL `http://<image-cache-server-url>/remove/<imageId>` where **imageId** matches the relative path of the uploaded image.
 
 Spanish Version
 ===============
@@ -47,4 +49,6 @@ Property     | Descripción                                          |Default
  ------------
 * Para subir una nueva imagen invocar por http a la siguiente url `http://<image-cache-server-url>/upload?source=<image-source-url>` donde **image-cache-server-url** es la url del servidor Ej: **localhost:8181**, e **image-source-url** es la url de donde se quiere cachear la imagen Ej: **http://localhost/assets/image.jpeg**
 
-* Para acceder a una imagen cacheada invocar a la siguiente url `http://<image-cache-server-url>/static/<imageId> donde **imageId** coincide con el path relativo de la imagen subida, Ej: si se subio una imagen desde **http://localhost/assets/image.jpeg** entonces el id será  **/assets/image.jpeg** y la url para obtener la imagen cacheada será **http://localhost:8181/static/assets/image.jpeg**
+* Para acceder a una imagen cacheada invocar a la siguiente url `http://<image-cache-server-url>/static/<imageId>` donde **imageId** coincide con el path relativo de la imagen subida, Ej: si se subio una imagen desde **http://localhost/assets/image.jpeg** entonces el id será  **/assets/image.jpeg** y la url para obtener la imagen cacheada será **http://localhost:8181/static/assets/image.jpeg**
+
+* Para eliminar a una imagen cacheada invocar a la siguiente url `http://<image-cache-server-url>/remove/<imageId>` donde **imageId** coincide con el path relativo de la imagen subida.
