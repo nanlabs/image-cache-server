@@ -33,28 +33,36 @@ public class ImageImporter {
 		String encodedURL = normalize(sourceURL);
 		String urlPath = new URL(sourceURL).getPath();
 		
-		URLConnectionFactory connectionFactory;
+		URLConnectionFactory connectionFactory = null;
 		try {
 			connectionFactory = connectionFactoryPool.borrowObject();
 			processImage(connectionFactory.open(encodedURL), urlPath, widths);
-			connectionFactoryPool.returnObject(connectionFactory);
-		}catch (IOException ioe){
+		} catch (IOException ioe) {
 			throw ioe;
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new RuntimeException("Unnable to borrow connectionFactory from the pool");
-		}
+			throw new RuntimeException("Unable to borrow connectionFactory from the pool");
+		} finally {
+	         if(connectionFactory != null) {
+	        	 try {
+					connectionFactoryPool.returnObject(connectionFactory);
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new RuntimeException("Unable to return connectionFactory to the pool");
+				}
+	         }
+	    }
 	}
 
 	private void processImage(URLConnection connection, String urlPath, int... widths) throws IOException {
 		InputStream imageData = connection.getInputStream();
-		try{
+		try {
 			for (Integer width : widths) {
 				byte[] processedImage = imageProcessor.doResize(imageData, width);
 				Image image = new Image(urlPath, processedImage, width);
 				storageRepository.store(image);
 			}
-		}finally{
+		} finally {
 			imageData.close();
 		}
 	}
