@@ -58,7 +58,14 @@
 
                 <section class="row-fluid content">
                   <div class="span12 {{ page.section }}">
-                    {{ content }}
+                    <div class="row-fluid">
+                        <article class="span12">
+                            <p class="lead">{{ page.lead-text }}</p>
+                            <section>
+                              {{ content }}
+                            </section>
+                        </article>
+                    </div>
                   </div>
                 </section>
 
