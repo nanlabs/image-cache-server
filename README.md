@@ -1,4 +1,4 @@
-# NaN Labs Official Site
+# Image Cache Server Project Site
 
 Site developeed using Jekyll Bootstrap <http://jekyllbootstrap.com>
 
